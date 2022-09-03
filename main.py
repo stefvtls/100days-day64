@@ -14,7 +14,7 @@ API_ENDPOINT = os.getenv("MOVIE_API")
 API_SEARCH_ENDPOINT = os.getenv("API_SEARCH_ENDPOINT")
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.getenv("KEY_FOR_STARTING_PROJECT")
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///movie.db"
 Bootstrap(app)
 db = SQLAlchemy(app)
@@ -83,18 +83,13 @@ def add():
     form = AddForm()
     if request.method == "POST":
         add_title = str(form.title.data).replace(" ", "%20")
-        # print(add_title)
         api_call = f"https://{API_SEARCH_ENDPOINT}?api_key={API_KEY}&query={add_title}"
-        # print(api_call)
         response = requests.get(api_call)
-        # print(response.status_code)
         response.raise_for_status()
         list = response.json()
-        # print(list)
         if "results" in list.keys():
             list = list["results"]
         print(list)
-        # return redirect(url_for("select", list_of_titles=list))
         return render_template("select.html", list_of_titles=list)
     else:
         return render_template("add.html", form=form)
